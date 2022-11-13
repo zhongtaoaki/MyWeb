@@ -8,27 +8,24 @@ import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.Map;
 
-public class LoginServlet extends HttpServlet {
+@WebServlet("/register")
+public class RegisterServlet extends HttpServlet {
 	@Override
 	public void doPost(HttpServletRequest request, HttpServletResponse response) throws SecurityException, IOException {
 		// login.html -> <form> -> <input> の name 属性で指定されたデータを獲得
 		String username = request.getParameter("username");
 		String password = request.getParameter("password");
 		response.setContentType("text/html;charset = UTF-8");
-		PrintWriter out = response.getWriter();
-		out.println("<!DOCTYPE html");
-		out.println("<html><body><p>");
 
-		User user = UserService.findByUsername(username);
-		if (user == null) {
-			out.println("该用户未注册");
-		} else if (user.getPassword().equals(password)) {
-			out.println("ログインしました。お帰りなさい、" + username + "。");
+		if (UserService.createUser(new User(username, password))) {
+			response.sendRedirect("/MyWeb/login.html");
 		} else {
-			out.println("ユーザー名またはパスワードが正しくありません。");
+			PrintWriter out = response.getWriter();
+			out.println("<!DOCTYPE html");
+			out.println("<html><body><p>");
+			out.println("用户名已存在");
+			out.println("</p></body></html>");
 		}
-
-		out.println("</p></body></html>");
 
 	}
 }
